@@ -5,7 +5,7 @@ import cv2
 import imageio
 import numpy as np
 import skvideo.io
-from PIL import Image
+from PIL.Image import Image
 
 from model_api import (
     AgeGenderLabel,
