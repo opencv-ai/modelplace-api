@@ -5,7 +5,9 @@ import cv2
 import imageio
 import numpy as np
 import skvideo.io
-from model_benchmark_api import (
+from PIL import Image
+
+from model_api import (
     AgeGenderLabel,
     BBox,
     CountableVideoFrame,
@@ -19,7 +21,6 @@ from model_benchmark_api import (
     TrackBBox,
     VideoFrame,
 )
-from PIL import Image
 
 from .colors import RGB_COLORS
 
