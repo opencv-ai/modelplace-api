@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, Generator, List
+from typing import Any, Generator, List, Union
 
 import cv2
 import imageio
@@ -183,7 +183,7 @@ def draw_classification_legend(
 
 
 def draw_detection_result(
-    image: Image,
+    image: Union[Image, np.ndarray],
     detections: List[BBox],
     confidence_threshold: float = 0,
     thickness: int = 2,
@@ -228,7 +228,9 @@ def draw_detection_result(
     return [draw_legend(image, class_map) for image in images]
 
 
-def draw_segmentation_result(image: Image, detection: Mask) -> List[np.ndarray]:
+def draw_segmentation_result(
+    image: Union[Image, np.ndarray], detection: Mask,
+) -> List[np.ndarray]:
     image_with_mask = np.array(image)
     source_image = image_with_mask.copy()
     images = []
@@ -255,7 +257,9 @@ def draw_segmentation_result(image: Image, detection: Mask) -> List[np.ndarray]:
 
 
 def draw_pose_estimation_result(
-    image: Image, detections: List[Pose], confidence_threshold: float,
+    image: Union[Image, np.ndarray],
+    detections: List[Pose],
+    confidence_threshold: float,
 ) -> List[np.ndarray]:
     image_with_skeletons = np.array(image)
     source_img = image_with_skeletons.copy()
@@ -320,7 +324,7 @@ def draw_pose_estimation_result(
 
 
 def draw_landmarks_result(
-    image: Image,
+    image: Union[Image, np.ndarray],
     detections: List[FacialLandmarks],
     classes: List[str],
     mapping_classes_to_points: dict,
@@ -359,7 +363,7 @@ def draw_landmarks_result(
 
 
 def draw_text_detections(
-    image: Image, detections: List[TextPolygon],
+    image: Union[Image, np.ndarray], detections: List[TextPolygon],
 ) -> List[np.ndarray]:
     image = np.array(image.copy())
     color = RGB_COLORS[1][::-1]
@@ -452,7 +456,7 @@ def draw_countable_tracks(
 
 
 def draw_classification_result(
-    image: Image, detections: List[Label],
+    image: Union[Image, np.ndarray], detections: List[Label],
 ) -> List[np.ndarray]:
     image = np.array(image)
     class_map = {label.class_name.capitalize(): label.score for label in detections}
@@ -461,7 +465,7 @@ def draw_classification_result(
 
 
 def draw_age_gender_recognition_result(
-    image: Image, detections: List[AgeGenderLabel],
+    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
 ) -> List[np.ndarray]:
     image = np.array(image)
     image_with_bbox = image.copy()
@@ -501,7 +505,7 @@ def draw_age_gender_recognition_result(
 
 
 def draw_emotion_recognition_result(
-    image: Image, detections: List[EmotionLabel],
+    image: Union[Image, np.ndarray], detections: List[EmotionLabel],
 ) -> List[np.ndarray]:
     image = np.array(image)
     image_with_bbox = image.copy()
