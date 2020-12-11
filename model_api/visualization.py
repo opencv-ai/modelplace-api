@@ -5,10 +5,7 @@ import cv2
 import imageio
 import numpy as np
 import skvideo.io
-from PIL import Image
-
-from .colors import RGB_COLORS
-from .objects import (
+from model_benchmark_api import (
     AgeGenderLabel,
     BBox,
     CountableVideoFrame,
@@ -22,6 +19,9 @@ from .objects import (
     TrackBBox,
     VideoFrame,
 )
+from PIL import Image
+
+from .colors import RGB_COLORS
 
 FFMPEG_OUTPUT_DICT = {
     "-vcodec": "libx264",
@@ -541,3 +541,38 @@ def draw_emotion_recognition_result(
 
 def create_gif(images: List[np.ndarray], save_path: str) -> None:
     imageio.mimsave(save_path, images, format="GIF-FI", fps=1, quantizer="nq")
+
+
+classes_adas = [
+    "Left Eye",
+    "Right Eye",
+    "Nose",
+    "Mouth",
+    "Left Eyebrow",
+    "Right Eyebrow",
+    "Face Contour",
+]
+mapping_classes_to_points_adas = {
+    classes_adas[0]: [0, 1],
+    classes_adas[1]: [2, 3],
+    classes_adas[2]: [4, 5, 6, 7],
+    classes_adas[3]: [8, 9, 10, 11],
+    classes_adas[4]: [12, 13, 14],
+    classes_adas[5]: [15, 16, 17],
+    classes_adas[6]: [x for x in range(18, 35)],
+}
+
+classes_retail = [
+    "Left Eye",
+    "Right Eye",
+    "Nose",
+    "Left Lip Corner",
+    "Right Lip Corner",
+]
+mapping_classes_to_points_retail = {
+    classes_retail[0]: [0],
+    classes_retail[1]: [1],
+    classes_retail[2]: [2],
+    classes_retail[3]: [3],
+    classes_retail[4]: [4],
+}
