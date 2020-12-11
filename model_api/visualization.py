@@ -188,7 +188,7 @@ def draw_detection_result(
     confidence_threshold: float = 0,
     thickness: int = 2,
 ) -> List[np.ndarray]:
-    image_with_boxes = np.array(image)
+    image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
     images = []
     detections = list(filter(lambda x: x.score > confidence_threshold, detections))
@@ -231,7 +231,7 @@ def draw_detection_result(
 def draw_segmentation_result(
     image: Union[Image, np.ndarray], detection: Mask,
 ) -> List[np.ndarray]:
-    image_with_mask = np.array(image)
+    image_with_mask = np.ascontiguousarray(image)
     source_image = image_with_mask.copy()
     images = []
     rgb_mask = np.zeros_like(image).astype(np.uint8)
@@ -261,7 +261,7 @@ def draw_pose_estimation_result(
     detections: List[Pose],
     confidence_threshold: float,
 ) -> List[np.ndarray]:
-    image_with_skeletons = np.array(image)
+    image_with_skeletons = np.ascontiguousarray(image)
     source_img = image_with_skeletons.copy()
     images = [source_img]
     class_map = {}
@@ -330,7 +330,7 @@ def draw_landmarks_result(
     mapping_classes_to_points: dict,
     confidence_threshold: float,
 ) -> List[np.ndarray]:
-    image = np.array(image)
+    image = np.ascontiguousarray(image)
     image_with_bbox = image.copy()
     images = []
     images.append(image)
@@ -365,7 +365,7 @@ def draw_landmarks_result(
 def draw_text_detections(
     image: Union[Image, np.ndarray], detections: List[TextPolygon],
 ) -> List[np.ndarray]:
-    image = np.array(image.copy())
+    image = np.ascontiguousarray(image)
     color = RGB_COLORS[1][::-1]
     images = [image.copy()]
     for polygon in detections:
@@ -458,7 +458,7 @@ def draw_countable_tracks(
 def draw_classification_result(
     image: Union[Image, np.ndarray], detections: List[Label],
 ) -> List[np.ndarray]:
-    image = np.array(image)
+    image = np.ascontiguousarray(image)
     class_map = {label.class_name.capitalize(): label.score for label in detections}
 
     return [draw_classification_legend(image, class_map)]
@@ -467,7 +467,7 @@ def draw_classification_result(
 def draw_age_gender_recognition_result(
     image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
 ) -> List[np.ndarray]:
-    image = np.array(image)
+    image = np.ascontiguousarray(image)
     image_with_bbox = image.copy()
     images = []
     for detection in detections:
@@ -507,7 +507,7 @@ def draw_age_gender_recognition_result(
 def draw_emotion_recognition_result(
     image: Union[Image, np.ndarray], detections: List[EmotionLabel],
 ) -> List[np.ndarray]:
-    image = np.array(image)
+    image = np.ascontiguousarray(image)
     image_with_bbox = image.copy()
     images = []
     for detection in detections:
