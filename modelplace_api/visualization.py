@@ -1,13 +1,8 @@
 from collections import defaultdict
 from typing import Any, Generator, List, Union
 
-import cv2
-import imageio
-import numpy as np
-import skvideo.io
-from PIL.Image import Image
-
-from model_api import (
+from .colors import RGB_COLORS
+from .objects import (
     AgeGenderLabel,
     BBox,
     CountableVideoFrame,
@@ -15,14 +10,23 @@ from model_api import (
     FacialLandmarks,
     Label,
     Mask,
-    Point,
     Pose,
     TextPolygon,
-    TrackBBox,
     VideoFrame,
 )
 
-from .colors import RGB_COLORS
+try:
+    import cv2
+    import imageio
+    import numpy as np
+    import skvideo.io
+    from PIL.Image import Image
+except ImportError:
+    raise ImportError(
+        "Some dependencies is invalid. "
+        "Please install this package with extra requiements: pip install modelplace-api[vis]",
+    )
+
 
 FFMPEG_OUTPUT_DICT = {
     "-vcodec": "libx264",
@@ -384,7 +388,6 @@ def draw_text_detections(
 def draw_tracks(
     video: Any, frames: List[VideoFrame], save_path, color=RGB_COLORS[2],
 ) -> None:
-
     writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT)
 
     for frame_number, frame in enumerate(video):
@@ -417,7 +420,6 @@ def draw_countable_tracks(
     frames: List[CountableVideoFrame],
     save_path,
 ) -> None:
-
     writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT)
 
     for frame_number, frame in enumerate(video):

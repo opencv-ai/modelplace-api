@@ -3,10 +3,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Tuple
 
 from loguru import logger
-from PIL import Image
 
 
-class BaseInferenceModel(ABC):
+class BaseModel(ABC):
     def __init__(
         self,
         model_path: str,
@@ -44,5 +43,10 @@ class BaseInferenceModel(ABC):
 
     @logger.catch(onerror=lambda _: traceback.print_exc())
     @abstractmethod
-    def process_sample(self, image: Image) -> Any:
+    def process_sample(self, image: Any) -> Any:
+        raise NotImplementedError
+
+    @logger.catch(onerror=lambda _: traceback.print_exc())
+    @abstractmethod
+    def to_device(self, device: Any) -> None:
         raise NotImplementedError
