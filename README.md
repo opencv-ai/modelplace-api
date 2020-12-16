@@ -1,4 +1,4 @@
-# Model Api
+# Modelplace Api
 
 This repository contains the required API and some useful functions for launching [samples for OAK](https://github.com/opencv-ai/oak-model-samples)
 

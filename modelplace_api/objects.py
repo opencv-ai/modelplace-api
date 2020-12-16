@@ -1,3 +1,4 @@
+import enum
 from typing import List
 
 import pydantic
@@ -103,3 +104,23 @@ class VideoFrame(pydantic.BaseModel):
 class CountableVideoFrame(VideoFrame):
     people_in: int
     people_out: int
+
+
+class Device(enum.Enum):
+    gpu = enum.auto()
+    cpu = enum.auto()
+
+
+@enum.unique
+class TaskType(enum.Enum):
+    detection = enum.auto()
+    segmentation = enum.auto()
+    pose_estimation = enum.auto()
+    tracking = enum.auto()
+    text_detection = enum.auto()
+    unknown = enum.auto()
+    people_counting = enum.auto()
+    classification = enum.auto()
+    facial_landmark_detection = enum.auto()
+    age_gender_recognition = enum.auto()
+    emotion_recognition = enum.auto()
