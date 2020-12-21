@@ -45,7 +45,7 @@ class COCOBBox(pydantic.BaseModel):
 
 
 class Mask(pydantic.BaseModel):
-    mask: list
+    mask: dict
     classes: list
 
 
