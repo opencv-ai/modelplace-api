@@ -236,26 +236,26 @@ def draw_detection_result(
 def draw_segmentation_result(
     image: Union[Image, np.ndarray], detection: Mask,
 ) -> List[np.ndarray]:
-    detection.mask = mask.decode(detection.mask)
     image_with_mask = np.ascontiguousarray(image)
     source_image = image_with_mask.copy()
     images = []
     rgb_mask = np.zeros_like(image).astype(np.uint8)
-    possible_ids = np.unique(detection.mask)
     class_map = dict(
         [
             [detection.classes[ids], RGB_COLORS[ids + 160][:3][::-1]]
-            for ids in possible_ids
+            for ids in detection.mask["classes"]
         ],
     )
     images.append(source_image)
-    for ids in possible_ids:
-        idx = np.array(detection.mask) == ids
-        color = class_map[detection.classes[ids]]
-        rgb_mask[idx] = color
+    for m, cl in zip(detection.mask["binary"], detection.mask["classes"]):
+        m = mask.decode(m)
 
         one_class_mask = np.zeros_like(image).astype(np.uint8)
-        one_class_mask[idx] = color
+        color = class_map[detection.classes[cl]]
+
+        rgb_mask[m == 1] = color
+        one_class_mask[m == 1] = color
+
         images.append(cv2.addWeighted(image_with_mask, 0.5, one_class_mask, 0.5, 0))
 
     images.append(cv2.addWeighted(image_with_mask, 0.55, rgb_mask, 0.45, 0))
