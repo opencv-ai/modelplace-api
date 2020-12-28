@@ -21,6 +21,7 @@ try:
     import numpy as np
     import skvideo.io
     from PIL.Image import Image
+    from pycocotools import mask
 except ImportError:
     raise ImportError(
         "Some dependencies is invalid. "
@@ -235,6 +236,7 @@ def draw_detection_result(
 def draw_segmentation_result(
     image: Union[Image, np.ndarray], detection: Mask,
 ) -> List[np.ndarray]:
+    detection.mask = mask.decode(detection.mask)
     image_with_mask = np.ascontiguousarray(image)
     source_image = image_with_mask.copy()
     images = []
