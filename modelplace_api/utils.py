@@ -16,6 +16,10 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
             ret = ret and is_equal(r, g, error)
     elif isinstance(result, str):
         ret = ret and result == gt
+    elif isinstance(result, bytes):
+        result = result.decode("utf-8")
+        gt = gt.decode("utf-8")
+        ret = ret and result == gt
     else:
         ret = ret and np.isclose(result, gt, rtol=error)
     return ret
