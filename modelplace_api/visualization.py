@@ -548,8 +548,8 @@ def draw_emotion_recognition_result(
     return images
 
 
-def create_gif(images: List[np.ndarray], save_path: str) -> None:
-    imageio.mimsave(save_path, images, format="GIF-FI", fps=1, quantizer="nq")
+def create_gif(images: List[np.ndarray], save_path: str, fps: int = 1) -> None:
+    imageio.mimsave(save_path, images, format="GIF-FI", fps=fps, quantizer="nq")
 
 
 classes_adas = [
