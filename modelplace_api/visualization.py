@@ -266,6 +266,7 @@ def draw_pose_estimation_result(
     image: Union[Image, np.ndarray],
     detections: List[Pose],
     confidence_threshold: float,
+    simple_labels: bool = False,
 ) -> List[np.ndarray]:
     image_with_skeletons = np.ascontiguousarray(image)
     source_img = image_with_skeletons.copy()
@@ -309,21 +310,39 @@ def draw_pose_estimation_result(
             for i, joint in enumerate(unique_joints):
                 if joint.x == joint.y == 0:
                     continue
-                cv2.circle(
-                    image_with_skeletons,
-                    (int(joint.x), int(joint.y)),
-                    4,
-                    RGB_COLORS[i][::-1],
-                    -1,
-                )
-                cv2.circle(
-                    one_pose_image,
-                    (int(joint.x), int(joint.y)),
-                    4,
-                    RGB_COLORS[i][::-1],
-                    -1,
-                )
+                if not simple_labels:
+                    cv2.circle(
+                        image_with_skeletons,
+                        (int(joint.x), int(joint.y)),
+                        4,
+                        RGB_COLORS[i][::-1],
+                        -1,
+                    )
+                    cv2.circle(
+                        one_pose_image,
+                        (int(joint.x), int(joint.y)),
+                        4,
+                        RGB_COLORS[i][::-1],
+                        -1,
+                    )
+                else:
+                    cv2.circle(
+                        image_with_skeletons,
+                        (int(joint.x), int(joint.y)),
+                        4,
+                        RGB_COLORS[len(unique_joints)][::-1],
+                        -1,
+                    )
+                    cv2.circle(
+                        one_pose_image,
+                        (int(joint.x), int(joint.y)),
+                        4,
+                        RGB_COLORS[len(unique_joints)][::-1],
+                        -1,
+                    )
             images.append(one_pose_image)
+            if simple_labels:
+                class_map = {"keypoint": RGB_COLORS[len(unique_joints)][::-1]}
 
     images.append(image_with_skeletons)
     return [draw_legend(image, class_map) for image in images]
@@ -548,8 +567,8 @@ def draw_emotion_recognition_result(
     return images
 
 
-def create_gif(images: List[np.ndarray], save_path: str) -> None:
-    imageio.mimsave(save_path, images, format="GIF-FI", fps=1, quantizer="nq")
+def create_gif(images: List[np.ndarray], save_path: str, fps: int = 1) -> None:
+    imageio.mimsave(save_path, images, format="GIF-FI", fps=fps, quantizer="nq")
 
 
 classes_adas = [
