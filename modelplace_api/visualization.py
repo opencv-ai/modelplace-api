@@ -519,12 +519,15 @@ def draw_classification_result(
 
 
 def draw_age_gender_recognition_result(
-    image: np.ndarray, detections: List[AgeGenderLabel],
+    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
 ) -> np.ndarray:
-    image = np.ascontiguousarray(image)
+    image_with_boxes = np.ascontiguousarray(image)
+    source_image = image_with_boxes.copy()
+    images = list()
+    images.append(source_image)
     for detection in detections:
-        image = cv2.rectangle(
-            image,
+        image_with_boxes = cv2.rectangle(
+            image_with_boxes,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
             RGB_COLORS[196],
@@ -534,17 +537,21 @@ def draw_age_gender_recognition_result(
         label_score, label_class_name = detection.gender[0]
         age = detection.age
         text = f"{label_class_name[1]}, Age: {age}"
-        image = draw_text_label(image, detection, text, bg_color=bg_color)
-    return image
+        image_with_boxes = draw_text_label(image_with_boxes, detection, text, bg_color=bg_color)
+        images.append(image_with_boxes)
+    return images
 
 
 def draw_emotion_recognition_result(
-    image: np.ndarray, detections: List[AgeGenderLabel],
+    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
 ) -> np.ndarray:
-    image = np.ascontiguousarray(image)
+    image_with_boxes = np.ascontiguousarray(image)
+    source_image = image_with_boxes.copy()
+    images = list()
+    images.append(source_image)
     for detection in detections:
-        image = cv2.rectangle(
-            image,
+        image_with_boxes = cv2.rectangle(
+            image_with_boxes,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
             RGB_COLORS[196],
@@ -552,8 +559,9 @@ def draw_emotion_recognition_result(
         )
         bg_color = RGB_COLORS[196]
         label_score, label_class_name = detection.emotion[0]
-        draw_text_label(image, detection, label_class_name[1], bg_color=bg_color)
-    return image
+        image_with_boxes = draw_text_label(image_with_boxes, detection, label_class_name[1], bg_color=bg_color)
+        images.append(image_with_boxes)
+    return images
 
 
 def create_gif(images: List[np.ndarray], save_path: str, fps: int = 1) -> None:
