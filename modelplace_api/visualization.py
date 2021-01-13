@@ -67,6 +67,37 @@ def draw_line(
             i += 1
 
 
+def draw_text_label(
+    image: np.ndarray,
+    detection: AgeGenderLabel,
+    text: str,
+    font_scale: float = 0.6,
+    thickness: int = 1,
+    bg_color: tuple = (128, 128, 128),
+) -> np.ndarray:
+    font = cv2.FONT_HERSHEY_TRIPLEX
+    (text_width, text_height) = cv2.getTextSize(
+        text, font, fontScale=font_scale, thickness=thickness,
+    )[0]
+    text_offset_x = detection.bbox.x1
+    text_offset_y = detection.bbox.y1 - 10
+    box_coords = (
+        (int(text_offset_x), int(text_offset_y)),
+        (int(text_offset_x + text_width + 2), int(text_offset_y - text_height - 2)),
+    )
+    cv2.rectangle(image, box_coords[0], box_coords[1], bg_color, cv2.FILLED)
+    cv2.putText(
+        image,
+        text,
+        (int(text_offset_x), int(text_offset_y)),
+        font,
+        fontScale=font_scale,
+        color=(255, 255, 255),
+        thickness=1,
+    )
+    return image
+
+
 def draw_text(
     img: np.ndarray,
     text: str,
@@ -286,14 +317,14 @@ def draw_pose_estimation_result(
                     image_with_skeletons,
                     (int(link.joint_a.x), int(link.joint_a.y)),
                     (int(link.joint_b.x), int(link.joint_b.y)),
-                    RGB_COLORS[-1][::-1],
+                    RGB_COLORS[-1][2::-1],
                     2,
                 )
                 cv2.line(
                     one_pose_image,
                     (int(link.joint_a.x), int(link.joint_a.y)),
                     (int(link.joint_b.x), int(link.joint_b.y)),
-                    RGB_COLORS[-1][::-1],
+                    RGB_COLORS[-1][2::-1],
                     2,
                 )
 
@@ -305,8 +336,8 @@ def draw_pose_estimation_result(
             unique_joints = []
             for i, a in enumerate(joints):
                 if not any(a.class_name == b.class_name for b in joints[:i]):
+                    class_map[a.class_name] = RGB_COLORS[len(unique_joints)][2::-1]
                     unique_joints.append(a)
-                    class_map[a.class_name] = RGB_COLORS[len(unique_joints)][::-1]
             for i, joint in enumerate(unique_joints):
                 if joint.x == joint.y == 0:
                     continue
@@ -315,14 +346,14 @@ def draw_pose_estimation_result(
                         image_with_skeletons,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[i][::-1],
+                        RGB_COLORS[i][2::-1],
                         -1,
                     )
                     cv2.circle(
                         one_pose_image,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[i][::-1],
+                        RGB_COLORS[i][2::-1],
                         -1,
                     )
                 else:
@@ -330,19 +361,19 @@ def draw_pose_estimation_result(
                         image_with_skeletons,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[len(unique_joints)][::-1],
+                        RGB_COLORS[len(unique_joints)][2::-1],
                         -1,
                     )
                     cv2.circle(
                         one_pose_image,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[len(unique_joints)][::-1],
+                        RGB_COLORS[len(unique_joints)][2::-1],
                         -1,
                     )
             images.append(one_pose_image)
             if simple_labels:
-                class_map = {"keypoint": RGB_COLORS[len(unique_joints)][::-1]}
+                class_map = {"keypoint": RGB_COLORS[len(unique_joints)][2::-1]}
 
     images.append(image_with_skeletons)
     return [draw_legend(image, class_map) for image in images]
@@ -488,21 +519,10 @@ def draw_classification_result(
 
 
 def draw_age_gender_recognition_result(
-    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
-) -> List[np.ndarray]:
+    image: np.ndarray, detections: List[AgeGenderLabel],
+) -> np.ndarray:
     image = np.ascontiguousarray(image)
-    image_with_bbox = image.copy()
-    images = []
     for detection in detections:
-        image_with_bbox = cv2.rectangle(
-            image_with_bbox,
-            (int(detection.bbox.x1), int(detection.bbox.y1)),
-            (int(detection.bbox.x2), int(detection.bbox.y2)),
-            RGB_COLORS[17],
-            thickness=8,
-        )
-    for detection in detections:
-        image = image_with_bbox.copy()
         image = cv2.rectangle(
             image,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
@@ -510,39 +530,19 @@ def draw_age_gender_recognition_result(
             RGB_COLORS[196],
             thickness=8,
         )
-        classification_labels = {
-            label.class_name.capitalize(): round(float(label.score), 2)
-            for label in detection.gender
-        }
-        classification_labels["Age"] = detection.age
-        image = draw_classification_legend(
-            image,
-            classification_labels,
-            font_scale=0.75,
-            font_thickness=2,
-            height_offset=20,
-            cell_height=50,
-        )
-        images.append(image)
-    return images
+        bg_color = RGB_COLORS[196]
+        label_score, label_class_name = detection.gender[0]
+        age = detection.age
+        text = f"{label_class_name[1]}, Age: {age}"
+        image = draw_text_label(image, detection, text, bg_color=bg_color)
+    return image
 
 
 def draw_emotion_recognition_result(
-    image: Union[Image, np.ndarray], detections: List[EmotionLabel],
-) -> List[np.ndarray]:
+    image: np.ndarray, detections: List[AgeGenderLabel],
+) -> np.ndarray:
     image = np.ascontiguousarray(image)
-    image_with_bbox = image.copy()
-    images = []
     for detection in detections:
-        image_with_bbox = cv2.rectangle(
-            image_with_bbox,
-            (int(detection.bbox.x1), int(detection.bbox.y1)),
-            (int(detection.bbox.x2), int(detection.bbox.y2)),
-            RGB_COLORS[17],
-            thickness=8,
-        )
-    for detection in detections:
-        image = image_with_bbox.copy()
         image = cv2.rectangle(
             image,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
@@ -550,21 +550,10 @@ def draw_emotion_recognition_result(
             RGB_COLORS[196],
             thickness=8,
         )
-        classification_labels = {
-            label.class_name.capitalize(): round(float(label.score), 2)
-            for label in detection.emotion
-        }
-
-        image = draw_classification_legend(
-            image,
-            classification_labels,
-            font_scale=0.75,
-            font_thickness=2,
-            height_offset=20,
-            cell_height=50,
-        )
-        images.append(image)
-    return images
+        bg_color = RGB_COLORS[196]
+        label_score, label_class_name = detection.emotion[0]
+        draw_text_label(image, detection, label_class_name[1],bg_color=bg_color)
+    return image
 
 
 def create_gif(images: List[np.ndarray], save_path: str, fps: int = 1) -> None:
