@@ -524,7 +524,6 @@ def draw_age_gender_recognition_result(
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
     images = list()
-    images = list()
     images.append(source_image)
     for detection in detections:
         image_with_boxes = cv2.rectangle(
