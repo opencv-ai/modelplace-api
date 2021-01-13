@@ -538,7 +538,7 @@ def draw_age_gender_recognition_result(
         age = detection.age
         text = f"{label_class_name[1]}, Age: {age}"
         image_with_boxes = draw_text_label(
-            image_with_boxes, detection, text, bg_color=bg_color
+            image_with_boxes, detection, text, bg_color=bg_color,
         )
         images.append(image_with_boxes)
     return images
@@ -562,7 +562,7 @@ def draw_emotion_recognition_result(
         bg_color = RGB_COLORS[196]
         label_score, label_class_name = detection.emotion[0]
         image_with_boxes = draw_text_label(
-            image_with_boxes, detection, label_class_name[1], bg_color=bg_color
+            image_with_boxes, detection, label_class_name[1], bg_color=bg_color,
         )
         images.append(image_with_boxes)
     return images
