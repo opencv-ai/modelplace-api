@@ -552,7 +552,7 @@ def draw_emotion_recognition_result(
         )
         bg_color = RGB_COLORS[196]
         label_score, label_class_name = detection.emotion[0]
-        draw_text_label(image, detection, label_class_name[1],bg_color=bg_color)
+        draw_text_label(image, detection, label_class_name[1], bg_color=bg_color)
     return image
 
 
