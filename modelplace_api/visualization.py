@@ -520,9 +520,10 @@ def draw_classification_result(
 
 def draw_age_gender_recognition_result(
     image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
-) -> np.ndarray:
+) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
+    images = list()
     images = list()
     images.append(source_image)
     for detection in detections:
@@ -546,7 +547,7 @@ def draw_age_gender_recognition_result(
 
 def draw_emotion_recognition_result(
     image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
-) -> np.ndarray:
+) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
     images = list()
