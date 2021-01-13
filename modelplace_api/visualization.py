@@ -93,7 +93,7 @@ def draw_text_label(
         font,
         fontScale=font_scale,
         color=(255, 255, 255),
-        thickness=1,
+        thickness=thickness,
     )
     return image
 
