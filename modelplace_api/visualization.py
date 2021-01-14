@@ -524,6 +524,7 @@ def draw_age_gender_recognition_result(
     image: Union[Image, np.ndarray],
     detections: List[AgeGenderLabel],
     detection_color: tuple = RGBA_COLORS[196][2::-1],
+    thickness: int = 8,
 ) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
@@ -535,7 +536,7 @@ def draw_age_gender_recognition_result(
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
             detection_color,
-            thickness=8,
+            thickness=thickness,
         )
         label_score, label_class_name = detection.gender[0]
         age = detection.age
@@ -551,6 +552,7 @@ def draw_emotion_recognition_result(
     image: Union[Image, np.ndarray],
     detections: List[EmotionLabel],
     detection_color: tuple = RGBA_COLORS[196][2::-1],
+    thickness: int = 8,
 ) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
@@ -562,7 +564,7 @@ def draw_emotion_recognition_result(
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
             detection_color,
-            thickness=8,
+            thickness=thickness,
         )
         label_score, label_class_name = detection.emotion[0]
         image_with_boxes = draw_text_label(
