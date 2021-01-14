@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Any, Generator, List, Union
 
-from .colors import RGB_COLORS
+from .colors import RGBA_COLORS
 from .objects import (
     AgeGenderLabel,
     BBox,
@@ -69,18 +69,20 @@ def draw_line(
 
 def draw_text_label(
     image: np.ndarray,
-    detection: AgeGenderLabel,
+    detection: Union[AgeGenderLabel, EmotionLabel],
     text: str,
     font_scale: float = 0.6,
     thickness: int = 1,
-    bg_color: tuple = (128, 128, 128),
+    bg_color: tuple = RGBA_COLORS[196],
+    text_color: tuple = (255, 255, 255),
+    font: int = cv2.FONT_HERSHEY_TRIPLEX,
+    text_height_offset: int = 10,
 ) -> np.ndarray:
-    font = cv2.FONT_HERSHEY_TRIPLEX
     (text_width, text_height) = cv2.getTextSize(
         text, font, fontScale=font_scale, thickness=thickness,
     )[0]
     text_offset_x = detection.bbox.x1
-    text_offset_y = detection.bbox.y1 - 10
+    text_offset_y = detection.bbox.y1 - text_height_offset
     box_coords = (
         (int(text_offset_x), int(text_offset_y)),
         (int(text_offset_x + text_width + 2), int(text_offset_y - text_height - 2)),
@@ -92,7 +94,7 @@ def draw_text_label(
         (int(text_offset_x), int(text_offset_y)),
         font,
         fontScale=font_scale,
-        color=(255, 255, 255),
+        color=text_color,
         thickness=thickness,
     )
     return image
@@ -231,7 +233,7 @@ def draw_detection_result(
     possible_labels = list(set([det.class_name for det in detections]))
     class_map = dict(
         [
-            [possible_labels[class_number], RGB_COLORS[class_number][::-1]]
+            [possible_labels[class_number], RGBA_COLORS[class_number][::-1]]
             for class_number in range(len(possible_labels))
         ],
     )
@@ -244,7 +246,7 @@ def draw_detection_result(
         one_class_image = source_image.copy()
         for detection in class_detections:
             label_id = possible_labels.index(detection.class_name)
-            color = RGB_COLORS[label_id][::-1]
+            color = RGBA_COLORS[label_id][::-1]
             image_with_boxes = cv2.rectangle(
                 image_with_boxes,
                 (int(detection.x1), int(detection.y1)),
@@ -273,7 +275,7 @@ def draw_segmentation_result(
     rgb_mask = np.zeros_like(image).astype(np.uint8)
     class_map = dict(
         [
-            [detection.classes[ids], RGB_COLORS[ids + 160][:3][::-1]]
+            [detection.classes[ids], RGBA_COLORS[ids + 160][:3][::-1]]
             for ids in detection.mask["classes"]
         ],
     )
@@ -317,14 +319,14 @@ def draw_pose_estimation_result(
                     image_with_skeletons,
                     (int(link.joint_a.x), int(link.joint_a.y)),
                     (int(link.joint_b.x), int(link.joint_b.y)),
-                    RGB_COLORS[-1][2::-1],
+                    RGBA_COLORS[-1][2::-1],
                     2,
                 )
                 cv2.line(
                     one_pose_image,
                     (int(link.joint_a.x), int(link.joint_a.y)),
                     (int(link.joint_b.x), int(link.joint_b.y)),
-                    RGB_COLORS[-1][2::-1],
+                    RGBA_COLORS[-1][2::-1],
                     2,
                 )
 
@@ -336,7 +338,7 @@ def draw_pose_estimation_result(
             unique_joints = []
             for i, a in enumerate(joints):
                 if not any(a.class_name == b.class_name for b in joints[:i]):
-                    class_map[a.class_name] = RGB_COLORS[len(unique_joints)][2::-1]
+                    class_map[a.class_name] = RGBA_COLORS[len(unique_joints)][2::-1]
                     unique_joints.append(a)
             for i, joint in enumerate(unique_joints):
                 if joint.x == joint.y == 0:
@@ -346,14 +348,14 @@ def draw_pose_estimation_result(
                         image_with_skeletons,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[i][2::-1],
+                        RGBA_COLORS[i][2::-1],
                         -1,
                     )
                     cv2.circle(
                         one_pose_image,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[i][2::-1],
+                        RGBA_COLORS[i][2::-1],
                         -1,
                     )
                 else:
@@ -361,19 +363,19 @@ def draw_pose_estimation_result(
                         image_with_skeletons,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[len(unique_joints)][2::-1],
+                        RGBA_COLORS[len(unique_joints)][2::-1],
                         -1,
                     )
                     cv2.circle(
                         one_pose_image,
                         (int(joint.x), int(joint.y)),
                         4,
-                        RGB_COLORS[len(unique_joints)][2::-1],
+                        RGBA_COLORS[len(unique_joints)][2::-1],
                         -1,
                     )
             images.append(one_pose_image)
             if simple_labels:
-                class_map = {"keypoint": RGB_COLORS[len(unique_joints)][2::-1]}
+                class_map = {"keypoint": RGBA_COLORS[len(unique_joints)][2::-1]}
 
     images.append(image_with_skeletons)
     return [draw_legend(image, class_map) for image in images]
@@ -392,14 +394,14 @@ def draw_landmarks_result(
     images.append(image)
 
     class_map = dict(
-        [[classes[ids], RGB_COLORS[ids + 1][:3][::-1]] for ids in range(len(classes))],
+        [[classes[ids], RGBA_COLORS[ids + 1][:3][::-1]] for ids in range(len(classes))],
     )
     for detection in detections:
         image_with_bbox = cv2.rectangle(
             image_with_bbox,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
-            RGB_COLORS[196],
+            RGBA_COLORS[196],
             thickness=6,
         )
     images.append(image_with_bbox)
@@ -422,7 +424,7 @@ def draw_text_detections(
     image: Union[Image, np.ndarray], detections: List[TextPolygon],
 ) -> List[np.ndarray]:
     image = np.ascontiguousarray(image)
-    color = RGB_COLORS[1][::-1]
+    color = RGBA_COLORS[1][::-1]
     images = [image.copy()]
     for polygon in detections:
         draw_poly(
@@ -438,7 +440,7 @@ def draw_text_detections(
 
 
 def draw_tracks(
-    video: Any, frames: List[VideoFrame], save_path, color=RGB_COLORS[2],
+    video: Any, frames: List[VideoFrame], save_path, color=RGBA_COLORS[2],
 ) -> None:
     writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT)
 
@@ -479,7 +481,7 @@ def draw_countable_tracks(
             continue
         anno = frames[frame_number]
         for box in anno.boxes:
-            color = RGB_COLORS[box.track_number % len(RGB_COLORS)]
+            color = RGBA_COLORS[box.track_number % len(RGBA_COLORS)]
             cv2.rectangle(
                 frame,
                 (int(box.x1), int(box.y1)),
@@ -519,7 +521,7 @@ def draw_classification_result(
 
 
 def draw_age_gender_recognition_result(
-    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel],
+    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel], detection_color: tuple = RGBA_COLORS[196]
 ) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
@@ -530,22 +532,21 @@ def draw_age_gender_recognition_result(
             image_with_boxes,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
-            RGB_COLORS[196],
+            detection_color,
             thickness=8,
         )
-        bg_color = RGB_COLORS[196]
         label_score, label_class_name = detection.gender[0]
         age = detection.age
         text = f"{label_class_name[1]}, Age: {age}"
         image_with_boxes = draw_text_label(
-            image_with_boxes, detection, text, bg_color=bg_color,
+            image_with_boxes, detection, text, bg_color=detection_color,
         )
         images.append(image_with_boxes)
     return images
 
 
 def draw_emotion_recognition_result(
-    image: Union[Image, np.ndarray], detections: List[EmotionLabel],
+    image: Union[Image, np.ndarray], detections: List[EmotionLabel], detection_color: tuple = RGBA_COLORS[196]
 ) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
@@ -556,13 +557,12 @@ def draw_emotion_recognition_result(
             image_with_boxes,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
-            RGB_COLORS[196],
+            detection_color,
             thickness=8,
         )
-        bg_color = RGB_COLORS[196]
         label_score, label_class_name = detection.emotion[0]
         image_with_boxes = draw_text_label(
-            image_with_boxes, detection, label_class_name[1], bg_color=bg_color,
+            image_with_boxes, detection, label_class_name[1], bg_color=detection_color,
         )
         images.append(image_with_boxes)
     return images
