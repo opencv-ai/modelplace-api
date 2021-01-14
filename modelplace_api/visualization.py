@@ -73,7 +73,7 @@ def draw_text_label(
     text: str,
     font_scale: float = 0.6,
     thickness: int = 1,
-    bg_color: tuple = RGBA_COLORS[196],
+    bg_color: tuple = RGBA_COLORS[196][2::-1],
     text_color: tuple = (255, 255, 255),
     font: int = cv2.FONT_HERSHEY_TRIPLEX,
     text_height_offset: int = 10,
@@ -233,7 +233,7 @@ def draw_detection_result(
     possible_labels = list(set([det.class_name for det in detections]))
     class_map = dict(
         [
-            [possible_labels[class_number], RGBA_COLORS[class_number][::-1]]
+            [possible_labels[class_number], RGBA_COLORS[class_number][2::-1]]
             for class_number in range(len(possible_labels))
         ],
     )
@@ -246,7 +246,7 @@ def draw_detection_result(
         one_class_image = source_image.copy()
         for detection in class_detections:
             label_id = possible_labels.index(detection.class_name)
-            color = RGBA_COLORS[label_id][::-1]
+            color = RGBA_COLORS[label_id][2::-1]
             image_with_boxes = cv2.rectangle(
                 image_with_boxes,
                 (int(detection.x1), int(detection.y1)),
@@ -275,7 +275,7 @@ def draw_segmentation_result(
     rgb_mask = np.zeros_like(image).astype(np.uint8)
     class_map = dict(
         [
-            [detection.classes[ids], RGBA_COLORS[ids + 160][:3][::-1]]
+            [detection.classes[ids], RGBA_COLORS[ids + 160][2::-1]]
             for ids in detection.mask["classes"]
         ],
     )
@@ -394,14 +394,14 @@ def draw_landmarks_result(
     images.append(image)
 
     class_map = dict(
-        [[classes[ids], RGBA_COLORS[ids + 1][:3][::-1]] for ids in range(len(classes))],
+        [[classes[ids], RGBA_COLORS[ids + 1][2::-1]] for ids in range(len(classes))],
     )
     for detection in detections:
         image_with_bbox = cv2.rectangle(
             image_with_bbox,
             (int(detection.bbox.x1), int(detection.bbox.y1)),
             (int(detection.bbox.x2), int(detection.bbox.y2)),
-            RGBA_COLORS[196],
+            RGBA_COLORS[196][2::-1],
             thickness=6,
         )
     images.append(image_with_bbox)
@@ -424,7 +424,7 @@ def draw_text_detections(
     image: Union[Image, np.ndarray], detections: List[TextPolygon],
 ) -> List[np.ndarray]:
     image = np.ascontiguousarray(image)
-    color = RGBA_COLORS[1][::-1]
+    color = RGBA_COLORS[1][2::-1]
     images = [image.copy()]
     for polygon in detections:
         draw_poly(
@@ -440,7 +440,7 @@ def draw_text_detections(
 
 
 def draw_tracks(
-    video: Any, frames: List[VideoFrame], save_path, color=RGBA_COLORS[2],
+    video: Any, frames: List[VideoFrame], save_path, color=RGBA_COLORS[2][2::-1],
 ) -> None:
     writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT)
 
@@ -481,7 +481,7 @@ def draw_countable_tracks(
             continue
         anno = frames[frame_number]
         for box in anno.boxes:
-            color = RGBA_COLORS[box.track_number % len(RGBA_COLORS)]
+            color = RGBA_COLORS[box.track_number % len(RGBA_COLORS)][2::-1]
             cv2.rectangle(
                 frame,
                 (int(box.x1), int(box.y1)),
@@ -521,7 +521,9 @@ def draw_classification_result(
 
 
 def draw_age_gender_recognition_result(
-    image: Union[Image, np.ndarray], detections: List[AgeGenderLabel], detection_color: tuple = RGBA_COLORS[196]
+    image: Union[Image, np.ndarray],
+    detections: List[AgeGenderLabel],
+    detection_color: tuple = RGBA_COLORS[196][2::-1],
 ) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
@@ -546,7 +548,9 @@ def draw_age_gender_recognition_result(
 
 
 def draw_emotion_recognition_result(
-    image: Union[Image, np.ndarray], detections: List[EmotionLabel], detection_color: tuple = RGBA_COLORS[196]
+    image: Union[Image, np.ndarray],
+    detections: List[EmotionLabel],
+    detection_color: tuple = RGBA_COLORS[196][2::-1],
 ) -> List[np.ndarray]:
     image_with_boxes = np.ascontiguousarray(image)
     source_image = image_with_boxes.copy()
