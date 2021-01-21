@@ -10,38 +10,38 @@ class Point(pydantic.BaseModel):
 
 
 class TextPolygon(pydantic.BaseModel):
-    points: List[Point] = []
+    points: List[Point]
     text: str = ""
 
 
 class BBox(pydantic.BaseModel):
-    x1: float = 0
-    y1: float = 0
-    x2: float = 1
-    y2: float = 1
-    score: float = 0
-    class_name: str = 0
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+    score: float
+    class_name: str
 
 
 class TrackBBox(pydantic.BaseModel):
-    x1: float = 0
-    y1: float = 0
-    x2: float = 1
-    y2: float = 1
-    score: float = 0
-    class_name: str = 0
-    track_number: int = -1
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+    score: float
+    class_name: str
+    track_number: int
 
 
 class COCOBBox(pydantic.BaseModel):
-    x1: float = 0
-    y1: float = 0
-    x2: float = 1
-    y2: float = 1
-    score: float = 0
-    class_name: str = 0
-    area: float = 0
-    is_crowd: int = 0
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+    score: float
+    class_name: str
+    area: float
+    is_crowd: int
 
 
 class Mask(pydantic.BaseModel):
@@ -50,10 +50,10 @@ class Mask(pydantic.BaseModel):
 
 
 class Joint(pydantic.BaseModel):
-    x: int = 0
-    y: int = 0
-    class_name: str = 0
-    score: float = 1
+    x: int
+    y: int
+    class_name: str
+    score: float
 
 
 class Link(pydantic.BaseModel):
@@ -62,38 +62,38 @@ class Link(pydantic.BaseModel):
 
 
 class Pose(pydantic.BaseModel):
-    score: float = 0
-    links: List[Link] = []
-    skeleton_parts: list = []
+    score: float
+    links: List[Link]
+    skeleton_parts: List
 
 
 class COCOPose(pydantic.BaseModel):
-    score: float = 0
-    links: List[Link] = []
-    skeleton_parts: list = []
+    score: float
+    links: List[Link]
+    skeleton_parts: List
     # GT PARTS
-    bbox: COCOBBox = COCOBBox()
+    bbox: COCOBBox
 
 
 class Label(pydantic.BaseModel):
-    score: float = 0
-    class_name: str = 0
+    score: float
+    class_name: str
 
 
 class AgeGenderLabel(pydantic.BaseModel):
-    bbox: BBox = BBox()
-    age: int = 0
-    gender: List[Label] = []
+    bbox: BBox
+    age: int
+    genders: List[Label]
 
 
 class EmotionLabel(pydantic.BaseModel):
-    bbox: BBox = BBox()
-    emotion: List[Label] = []
+    bbox: BBox
+    emotions: List[Label]
 
 
 class FacialLandmarks(pydantic.BaseModel):
-    bbox: BBox = BBox()
-    keypoints: List[Point] = []
+    bbox: BBox
+    keypoints: List[Point]
 
 
 class VideoFrame(pydantic.BaseModel):

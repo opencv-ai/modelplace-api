@@ -4,8 +4,7 @@ from setuptools import setup
 
 packages = ["modelplace_api"]
 
-package_data = {"": ["*"]}
-
+package_data = {"": ["*", "text_styles/*"]}
 install_requires = [
     "pydantic==1.5.1",
     "loguru==0.5.1",
@@ -24,7 +23,7 @@ extras_require = {
 
 setup_kwargs = {
     "name": "modelplace-api",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "",
     "long_description": None,
     "author": "Xperience.ai",
