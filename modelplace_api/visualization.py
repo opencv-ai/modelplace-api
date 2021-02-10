@@ -500,17 +500,17 @@ def draw_landmarks(
     return [draw_landmarks_one_frame(image, detections, draw_bbox)]
 
 
-def draw_keypints_one_frame(image: np.ndarray, detections: List[Pose]) -> np.ndarray:
+def draw_keypoints_one_frame(image: np.ndarray, detections: List[Pose]) -> np.ndarray:
     for detection in detections:
         image = add_pose(image, detection, LAVANDER_COLOR)
     return image
 
 
-def draw_keypints(image: np.ndarray, detections: List[Pose]) -> List[np.ndarray]:
+def draw_keypoints(image: np.ndarray, detections: List[Pose]) -> List[np.ndarray]:
     images = [image.copy()]
     for detection in detections:
-        images.append(draw_keypints_one_frame(image.copy(), [detection]))
-    images.append(draw_keypints_one_frame(image, detections))
+        images.append(draw_keypoints_one_frame(image.copy(), [detection]))
+    images.append(draw_keypoints_one_frame(image, detections))
     return images
 
 
