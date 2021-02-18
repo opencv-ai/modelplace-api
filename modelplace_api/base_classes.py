@@ -1,8 +1,9 @@
 import traceback
 from abc import ABC, abstractmethod
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
 
 from loguru import logger
+from .objects import Device
 
 
 class BaseModel(ABC):
@@ -30,7 +31,7 @@ class BaseModel(ABC):
 
     @logger.catch(onerror=lambda _: traceback.print_exc())
     @abstractmethod
-    def model_load(self) -> None:
+    def model_load(self, device: Union[Device, None]) -> None:
         raise NotImplementedError
 
     def forward(self, data: Any) -> Any:
@@ -44,9 +45,4 @@ class BaseModel(ABC):
     @logger.catch(onerror=lambda _: traceback.print_exc())
     @abstractmethod
     def process_sample(self, image: Any) -> Any:
-        raise NotImplementedError
-
-    @logger.catch(onerror=lambda _: traceback.print_exc())
-    @abstractmethod
-    def to_device(self, device: Any) -> None:
         raise NotImplementedError
