@@ -1,6 +1,6 @@
 import traceback
 from abc import ABC, abstractmethod
-from typing import Any, Tuple, Union
+from typing import Any, Tuple
 
 from loguru import logger
 from .objects import Device
@@ -31,7 +31,7 @@ class BaseModel(ABC):
 
     @logger.catch(onerror=lambda _: traceback.print_exc())
     @abstractmethod
-    def model_load(self, device: Union[Device, None]) -> None:
+    def model_load(self, device: Device) -> None:
         raise NotImplementedError
 
     def forward(self, data: Any) -> Any:
