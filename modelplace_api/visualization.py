@@ -475,7 +475,7 @@ def draw_text_detections(
 
 
 def draw_landmarks_one_frame(
-    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = False,
+    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
 ) -> np.ndarray:
     for detection in detections:
         for keypoint_number, keypoint in enumerate(detection.keypoints):
@@ -495,7 +495,7 @@ def draw_landmarks_one_frame(
 
 
 def draw_landmarks(
-    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = False,
+    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
 ) -> List[np.ndarray]:
     return [draw_landmarks_one_frame(image, detections, draw_bbox)]
 
