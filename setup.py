@@ -23,7 +23,7 @@ extras_require = {
 
 setup_kwargs = {
     "name": "modelplace-api",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "description": "",
     "long_description": None,
     "author": "Xperience.ai",
