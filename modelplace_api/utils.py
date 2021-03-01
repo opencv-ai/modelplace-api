@@ -23,3 +23,17 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
     else:
         ret = ret and np.isclose(result, gt, rtol=error)
     return ret
+
+def prepare_mask(result_mask):
+    masks = {
+        "binary": [],
+        "classes": [],
+    }
+    for unique in np.unique(result_mask):
+        binary_mask = np.zeros(shape=result_mask.shape, dtype=np.uint8)
+        binary_mask[result_mask == unique] = 1
+        masks["binary"].append(
+            mask.encode(np.asfortranarray(binary_mask, dtype=np.uint8)),
+        )
+        masks["classes"].append(int(unique))
+    return masks
