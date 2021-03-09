@@ -1,4 +1,4 @@
-__version__ = "0.4.3"
+__version__ = "0.4.5"
 
 import modelplace_api.utils
 import modelplace_api.visualization

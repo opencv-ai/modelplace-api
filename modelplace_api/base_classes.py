@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Tuple
 
 from loguru import logger
+
 from .objects import Device
 
 
