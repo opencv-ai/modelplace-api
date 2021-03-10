@@ -48,6 +48,7 @@ DELIMITER_COLOR = (255, 255, 255, 1)
 WHITE_TEXT_COLOR = (255, 255, 255, 1)
 BLACK_TEXT_COLOR = (0, 0, 0, 1)
 LAVANDER_COLOR = (125, 211, 210, 1)
+DARK_PINK_COLOR = (109, 84, 199, 1)
 NORM_HEIGHT = 591
 CLASS_BOX_WIDTH = 80
 CLASS_BOX_HEIGHT = 40
@@ -70,6 +71,7 @@ CLASS_TEXT_SIZE = 14
 LINE_THINKNESS = 3
 POSE_EDGE_THINKNESS = 6
 POSE_POINT_SIZE = 10
+MESH_POINT_SIZE = 1.5
 
 
 def get_text_width(image, text, text_size, ttf_path):
@@ -512,6 +514,32 @@ def draw_keypoints(image: np.ndarray, detections: List[Pose]) -> List[np.ndarray
         images.append(draw_keypoints_one_frame(image.copy(), [detection]))
     images.append(draw_keypoints_one_frame(image, detections))
     return images
+
+
+def draw_mesh_one_frame(
+    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
+) -> np.ndarray:
+    for detection in detections:
+        for keypoint in detection.keypoints:
+            image = add_point(image, keypoint, DARK_PINK_COLOR, MESH_POINT_SIZE)
+        if draw_bbox:
+            image = add_bbox(
+                image,
+                (
+                    detection.bbox.x1,
+                    detection.bbox.y1,
+                    detection.bbox.x2,
+                    detection.bbox.y2,
+                ),
+                LAVANDER_COLOR,
+            )
+    return image
+
+
+def draw_mesh(
+    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
+) -> List[np.ndarray]:
+    return [draw_mesh_one_frame(image, detections, draw_bbox)]
 
 
 def draw_age_gender_recognition_one_frame(

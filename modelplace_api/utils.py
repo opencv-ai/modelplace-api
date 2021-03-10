@@ -1,6 +1,15 @@
+import logging
 from typing import Any
-from pycocotools import mask
+
 import numpy as np
+
+try:
+    from pycocotools import mask
+except ImportError:
+    logging.warn(
+        "The 'prepare_mask' function will not work because the 'pycocotools' package was not found."
+        "Please install this package with extra requiements: pip install modelplace-api[vis]",
+    )
 
 
 def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
@@ -23,6 +32,7 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
     else:
         ret = ret and np.isclose(result, gt, rtol=error)
     return ret
+
 
 def prepare_mask(result_mask):
     masks = {
