@@ -1,6 +1,22 @@
 # -*- coding: utf-8 -*-
 
+import codecs
+import os.path
+
 from setuptools import setup
+
+
+def get_version(rel_path):
+    with codecs.open(
+        os.path.join(os.path.abspath(os.path.dirname(__file__)), rel_path), "r",
+    ) as fp:
+        for line in fp.read().splitlines():
+            if line.startswith("__version__"):
+                delim = '"' if '"' in line else "'"
+                return line.split(delim)[1]
+        else:
+            raise RuntimeError("Unable to find version string.")
+
 
 packages = ["modelplace_api"]
 
@@ -23,7 +39,7 @@ extras_require = {
 
 setup_kwargs = {
     "name": "modelplace-api",
-    "version": "0.4.5",
+    "version": get_version("modelplace_api/__init__.py"),
     "description": "",
     "long_description": None,
     "author": "Xperience.ai",

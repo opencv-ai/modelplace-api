@@ -1,3 +1,4 @@
+import logging
 import os
 from collections import defaultdict
 from typing import Generator, List
@@ -25,7 +26,7 @@ try:
     from PIL import Image, ImageDraw, ImageFont
     from pycocotools import mask
 except ImportError:
-    raise ImportError(
+    logging.warn(
         "Some dependencies is invalid. "
         "Please install this package with extra requiements: pip install modelplace-api[vis]",
     )
