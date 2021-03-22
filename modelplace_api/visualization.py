@@ -1,3 +1,4 @@
+import logging
 import os
 from collections import defaultdict
 from typing import Generator, List
@@ -16,6 +17,7 @@ from .objects import (
     TextPolygon,
     VideoFrame,
 )
+from .utils import decode_coco_rle
 
 try:
     import cv2
@@ -23,11 +25,12 @@ try:
     import numpy as np
     import skvideo
     from PIL import Image, ImageDraw, ImageFont
-    from pycocotools import mask
 except ImportError:
-    raise ImportError(
+    logging.warn(
         "Some dependencies is invalid. "
-        "Please install this package with extra requiements: pip install modelplace-api[vis]",
+        "Please install this package with extra requiements. "
+        "For unix: pip install modelplace-api[vis] "
+        "For windows: pip install modelplace-api[vis-windows]",
     )
 
 
@@ -385,7 +388,7 @@ def draw_segmentation_one_frame(image: np.ndarray, detection: Mask) -> np.ndarra
     ]
     for class_number, rle_mask in enumerate(detection.mask["binary"]):
         color = RGBA_COLORS[class_number]
-        decoded_mask = mask.decode(rle_mask)
+        decoded_mask = decode_coco_rle(rle_mask)
         idx = decoded_mask == 1
         image = add_mask(image, idx, color)
     image = add_legend_all_classes(image, classes)
@@ -404,7 +407,7 @@ def draw_segmentation(image: np.ndarray, detection: Mask) -> List[np.ndarray]:
     for class_number, rle_mask in enumerate(detection.mask["binary"]):
         one_class_image = source_image.copy()
         color = RGBA_COLORS[class_number]
-        decoded_mask = mask.decode(rle_mask)
+        decoded_mask = decode_coco_rle(rle_mask)
         idx = decoded_mask == 1
         one_class_image = add_mask(one_class_image, idx, color)
         one_class_image = add_legend(one_class_image, classes, color, class_number)

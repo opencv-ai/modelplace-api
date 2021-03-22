@@ -1,15 +1,20 @@
 import logging
+import os
 from typing import Any
 
 import numpy as np
 
 try:
     from pycocotools import mask
+
+    encode_binary_mask = mask.encode
+    decode_coco_rle = mask.decode
 except ImportError:
     logging.warn(
-        "The 'prepare_mask' function will not work because the 'pycocotools' package was not found."
-        "Please install this package with extra requiements: pip install modelplace-api[vis]",
+        "The 'pycocotools' package wasn't found. Slow encoding and decoding are used for the RLE mask.",
     )
+
+    from ._rle_mask import encode_binary_mask, decode_coco_rle
 
 
 def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
@@ -42,8 +47,6 @@ def prepare_mask(result_mask):
     for unique in np.unique(result_mask):
         binary_mask = np.zeros(shape=result_mask.shape, dtype=np.uint8)
         binary_mask[result_mask == unique] = 1
-        masks["binary"].append(
-            mask.encode(np.asfortranarray(binary_mask, dtype=np.uint8)),
-        )
+        masks["binary"].append(encode_binary_mask(binary_mask))
         masks["classes"].append(int(unique))
     return masks
