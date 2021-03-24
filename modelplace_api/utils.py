@@ -10,7 +10,7 @@ try:
     encode_binary_mask = mask.encode
     decode_coco_rle = mask.decode
 except ImportError:
-    logger.warn(
+    logger.warning(
         "The 'pycocotools' package wasn't found. Slow encoding and decoding are used for the RLE mask.",
     )
 
