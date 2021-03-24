@@ -3,7 +3,9 @@
 import codecs
 import os.path
 
-from setuptools import setup
+from setuptools import dist, setup
+
+dist.Distribution().fetch_build_eggs(["Cython>=0.29.17", "numpy>=1.16.4"])
 
 
 def get_version(rel_path):
@@ -24,12 +26,12 @@ package_data = {"": ["*", "text_styles/*"]}
 install_requires = [
     "pydantic==1.5.1",
     "loguru==0.5.1",
+    "numpy>=1.16.4",
 ]
 
 extras_require = {
     "vis": [
         "Pillow==7.1.2",
-        "numpy>=1.16.4",
         "opencv-python>=4.2.0.34,<5.0",
         "imageio==2.9.0",
         "sk-video==1.1.10",
@@ -37,7 +39,6 @@ extras_require = {
     ],
     "vis-windows": [
         "Pillow==7.1.2",
-        "numpy>=1.16.4",
         "opencv-python>=4.2.0.34,<5.0",
         "imageio==2.9.0",
         "sk-video==1.1.10",
