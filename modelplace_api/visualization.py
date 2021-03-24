@@ -27,7 +27,7 @@ try:
     import skvideo
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
-    logger.warn(
+    logger.warning(
         "Some dependencies is invalid. "
         "Please install this package with extra requiements. "
         "For unix: pip install modelplace-api[vis] "
