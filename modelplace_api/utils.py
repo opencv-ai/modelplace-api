@@ -1,8 +1,8 @@
-import logging
 import os
 from typing import Any
 
 import numpy as np
+from loguru import logger
 
 try:
     from pycocotools import mask
@@ -10,7 +10,7 @@ try:
     encode_binary_mask = mask.encode
     decode_coco_rle = mask.decode
 except ImportError:
-    logging.warn(
+    logger.warn(
         "The 'pycocotools' package wasn't found. Slow encoding and decoding are used for the RLE mask.",
     )
 
@@ -39,7 +39,7 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
     return ret
 
 
-def prepare_mask(result_mask):
+def prepare_mask(result_mask: np.ndarray) -> dict:
     masks = {
         "binary": [],
         "classes": [],
@@ -47,6 +47,6 @@ def prepare_mask(result_mask):
     for unique in np.unique(result_mask):
         binary_mask = np.zeros(shape=result_mask.shape, dtype=np.uint8)
         binary_mask[result_mask == unique] = 1
-        masks["binary"].append(encode_binary_mask(binary_mask))
+        masks["binary"].append(encode_binary_mask(np.asfortranarray(binary_mask)))
         masks["classes"].append(int(unique))
     return masks

@@ -1,7 +1,9 @@
-import logging
 import os
 from collections import defaultdict
 from typing import Generator, List
+
+import numpy as np
+from loguru import logger
 
 from .colors import RGBA_COLORS
 from .objects import (
@@ -22,11 +24,10 @@ from .utils import decode_coco_rle
 try:
     import cv2
     import imageio
-    import numpy as np
     import skvideo
     from PIL import Image, ImageDraw, ImageFont
 except ImportError:
-    logging.warn(
+    logger.warn(
         "Some dependencies is invalid. "
         "Please install this package with extra requiements. "
         "For unix: pip install modelplace-api[vis] "
