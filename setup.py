@@ -3,9 +3,7 @@
 import codecs
 import os.path
 
-from setuptools import dist, setup
-
-dist.Distribution().fetch_build_eggs(["Cython>=0.29.17", "numpy>=1.16.4"])
+from setuptools import setup
 
 
 def get_version(rel_path):
@@ -35,7 +33,7 @@ extras_require = {
         "opencv-python>=4.2.0.34,<5.0",
         "imageio==2.9.0",
         "sk-video==1.1.10",
-        "pycocotools==2.0.0",
+        "pycocotools==2.0.2",
     ],
     "vis-windows": [
         "Pillow==7.1.2",
