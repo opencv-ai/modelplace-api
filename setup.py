@@ -29,14 +29,14 @@ install_requires = [
 
 extras_require = {
     "vis": [
-        "Pillow==7.1.2",
+        "Pillow>=7.1.2, <=8.1.0",
         "opencv-python>=4.2.0.34,<5.0",
         "imageio==2.9.0",
         "sk-video==1.1.10",
         "pycocotools==2.0.2",
     ],
     "vis-windows": [
-        "Pillow==7.1.2",
+        "Pillow>=7.1.2, <=8.1.0",
         "opencv-python>=4.2.0.34,<5.0",
         "imageio==2.9.0",
         "sk-video==1.1.10",
