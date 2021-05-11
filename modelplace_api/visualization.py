@@ -622,8 +622,12 @@ def draw_tracks_one_frame(image: np.ndarray, detection: VideoFrame) -> np.ndarra
     return image
 
 
-def draw_tracks(video: Generator, frames: List[VideoFrame], save_path: str) -> None:
-    writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT)
+def draw_tracks(
+    video: Generator, frames: List[VideoFrame], save_path: str, fps: int,
+) -> None:
+    outputdict = FFMPEG_OUTPUT_DICT.copy()
+    outputdict["-r"] = str(fps)
+    writer = skvideo.io.FFmpegWriter(save_path, outputdict=outputdict)
     for frame_number, frame in enumerate(video):
         if frame_number >= len(frames):
             continue
@@ -681,9 +685,11 @@ def draw_countable_tracks_one_frame(
 
 
 def draw_countable_tracks(
-    video: Generator, frames: List[CountableVideoFrame], save_path: str,
+    video: Generator, frames: List[CountableVideoFrame], save_path: str, fps: int,
 ) -> None:
-    writer = skvideo.io.FFmpegWriter(save_path, outputdict=FFMPEG_OUTPUT_DICT)
+    outputdict = FFMPEG_OUTPUT_DICT.copy()
+    outputdict["-r"] = str(fps)
+    writer = skvideo.io.FFmpegWriter(save_path, outputdict=outputdict)
     for frame_number, frame in enumerate(video):
         if frame_number >= len(frames):
             continue
