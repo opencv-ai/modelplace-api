@@ -288,8 +288,11 @@ def add_poly(
 def add_mask(image: np.ndarray, idx: np.ndarray, color: tuple) -> np.ndarray:
     mask = np.zeros_like(image).astype(np.uint8)
     mask[idx] = color[: mask.shape[2]]
-    image = cv2.addWeighted(image, 1.0, mask, 0.5, 0)
-    return image
+    alpha = 0.8
+    beta = 0.4
+    image = alpha * image + beta * mask
+    image = image * (2 - np.max(image) / 255)
+    return image.astype(np.uint8)
 
 
 def add_legend(
