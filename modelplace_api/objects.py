@@ -91,7 +91,7 @@ class EmotionLabel(pydantic.BaseModel):
     emotions: List[Label]
 
 
-class FacialLandmarks(pydantic.BaseModel):
+class Landmarks(pydantic.BaseModel):
     bbox: BBox
     keypoints: List[Point]
 
@@ -121,7 +121,7 @@ class TaskType(enum.Enum):
     unknown = enum.auto()
     people_counting = enum.auto()
     classification = enum.auto()
-    facial_landmark_detection = enum.auto()
+    landmark_detection = enum.auto()
     age_gender_recognition = enum.auto()
     emotion_recognition = enum.auto()
     mesh_detection = enum.auto()
