@@ -11,7 +11,7 @@ from .objects import (
     BBox,
     CountableVideoFrame,
     EmotionLabel,
-    FacialLandmarks,
+    Landmarks,
     Label,
     Mask,
     Point,
@@ -484,7 +484,7 @@ def draw_text_detections(
 
 
 def draw_landmarks_one_frame(
-    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
+    image: np.ndarray, detections: List[Landmarks], draw_bbox: bool = True,
 ) -> np.ndarray:
     for detection in detections:
         for keypoint_number, keypoint in enumerate(detection.keypoints):
@@ -504,7 +504,7 @@ def draw_landmarks_one_frame(
 
 
 def draw_landmarks(
-    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
+    image: np.ndarray, detections: List[Landmarks], draw_bbox: bool = True,
 ) -> List[np.ndarray]:
     return [draw_landmarks_one_frame(image, detections, draw_bbox)]
 
@@ -524,7 +524,7 @@ def draw_keypoints(image: np.ndarray, detections: List[Pose]) -> List[np.ndarray
 
 
 def draw_mesh_one_frame(
-    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
+    image: np.ndarray, detections: List[Landmarks], draw_bbox: bool = True,
 ) -> np.ndarray:
     for detection in detections:
         for keypoint in detection.keypoints:
@@ -544,7 +544,7 @@ def draw_mesh_one_frame(
 
 
 def draw_mesh(
-    image: np.ndarray, detections: List[FacialLandmarks], draw_bbox: bool = True,
+    image: np.ndarray, detections: List[Landmarks], draw_bbox: bool = True,
 ) -> List[np.ndarray]:
     return [draw_mesh_one_frame(image, detections, draw_bbox)]
 
