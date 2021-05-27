@@ -39,12 +39,14 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
     return ret
 
 
-def prepare_mask(result_mask: np.ndarray) -> dict:
+def prepare_mask(result_mask: np.ndarray, ignore_index: int = -1) -> dict:
     masks = {
         "binary": [],
         "classes": [],
     }
     for unique in np.unique(result_mask):
+        if unique == ignore_index:
+            continue
         binary_mask = np.zeros(shape=result_mask.shape, dtype=np.uint8)
         binary_mask[result_mask == unique] = 1
         masks["binary"].append(encode_binary_mask(np.asfortranarray(binary_mask)))
