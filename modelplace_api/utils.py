@@ -26,8 +26,11 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
         for key in result:
             ret = ret and is_equal(result[key], gt[key], error)
     elif isinstance(result, list):
-        for r, g in zip(result, gt):
-            ret = ret and is_equal(r, g, error)
+        if not result:
+            ret = ret and not bool(len(gt))
+        else:
+            for r, g in zip(result, gt):
+                ret = ret and is_equal(r, g, error)
     elif isinstance(result, str):
         ret = ret and result == gt
     elif isinstance(result, bytes):
