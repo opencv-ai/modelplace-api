@@ -11,8 +11,8 @@ from .objects import (
     BBox,
     CountableVideoFrame,
     EmotionLabel,
-    Landmarks,
     Label,
+    Landmarks,
     Mask,
     Point,
     Pose,
@@ -369,7 +369,6 @@ def draw_detections(image: np.ndarray, detections: List[BBox]) -> List[np.ndarra
     classes = defaultdict(list)
     for det in detections:
         classes[det.class_name].append(det)
-    images.append(add_legend(source_image, classes, BACKGROUND_COLOR, -1))
     for class_number, class_detections in enumerate(classes.values()):
         one_class_image = source_image.copy()
         color = RGBA_COLORS[class_number]
@@ -381,6 +380,7 @@ def draw_detections(image: np.ndarray, detections: List[BBox]) -> List[np.ndarra
             )
         one_class_image = add_legend(one_class_image, classes, color, class_number)
         images.append(one_class_image)
+    images.append(add_legend(source_image, classes, BACKGROUND_COLOR, -1))
     return images
 
 
@@ -407,7 +407,6 @@ def draw_segmentation(image: np.ndarray, detection: Mask) -> List[np.ndarray]:
         for class_number, class_name in enumerate(detection.classes)
         if class_number in detection.mask["classes"]
     ]
-    images.append(add_legend(source_image, classes, BACKGROUND_COLOR, -1))
     for class_number, rle_mask in enumerate(detection.mask["binary"]):
         one_class_image = source_image.copy()
         color = RGBA_COLORS[class_number]
@@ -416,6 +415,7 @@ def draw_segmentation(image: np.ndarray, detection: Mask) -> List[np.ndarray]:
         one_class_image = add_mask(one_class_image, idx, color)
         one_class_image = add_legend(one_class_image, classes, color, class_number)
         images.append(one_class_image)
+    images.append(add_legend(source_image, classes, BACKGROUND_COLOR, -1))
     return images
 
 
@@ -458,7 +458,8 @@ def draw_classification_one_frame(image: np.ndarray, labels: List[Label]) -> np.
 
 
 def draw_classification(image: np.ndarray, labels: List[Label]) -> List[np.ndarray]:
-    return [draw_classification_one_frame(image, labels)]
+    source_image = image.copy()
+    return [draw_classification_one_frame(image, labels), source_image]
 
 
 def draw_text_detections_one_frame(
@@ -480,7 +481,8 @@ def draw_text_detections_one_frame(
 def draw_text_detections(
     image: np.ndarray, detections: List[TextPolygon],
 ) -> List[np.ndarray]:
-    return [draw_text_detections_one_frame(image, detections)]
+    source_image = image.copy()
+    return [draw_text_detections_one_frame(image, detections), source_image]
 
 
 def draw_landmarks_one_frame(
@@ -506,7 +508,8 @@ def draw_landmarks_one_frame(
 def draw_landmarks(
     image: np.ndarray, detections: List[Landmarks], draw_bbox: bool = True,
 ) -> List[np.ndarray]:
-    return [draw_landmarks_one_frame(image, detections, draw_bbox)]
+    source_image = image.copy()
+    return [draw_landmarks_one_frame(image, detections, draw_bbox), source_image]
 
 
 def draw_keypoints_one_frame(image: np.ndarray, detections: List[Pose]) -> np.ndarray:
@@ -516,10 +519,12 @@ def draw_keypoints_one_frame(image: np.ndarray, detections: List[Pose]) -> np.nd
 
 
 def draw_keypoints(image: np.ndarray, detections: List[Pose]) -> List[np.ndarray]:
-    images = [image.copy()]
+    source_image = image.copy()
+    images = []
     for detection in detections:
         images.append(draw_keypoints_one_frame(image.copy(), [detection]))
     images.append(draw_keypoints_one_frame(image, detections))
+    images.append(source_image)
     return images
 
 
@@ -546,7 +551,8 @@ def draw_mesh_one_frame(
 def draw_mesh(
     image: np.ndarray, detections: List[Landmarks], draw_bbox: bool = True,
 ) -> List[np.ndarray]:
-    return [draw_mesh_one_frame(image, detections, draw_bbox)]
+    source_image = image.copy()
+    return [draw_mesh_one_frame(image, detections, draw_bbox), source_image]
 
 
 def draw_age_gender_recognition_one_frame(
@@ -566,10 +572,11 @@ def draw_age_gender_recognition(
     image: np.ndarray, detections: List[AgeGenderLabel],
 ) -> List[np.ndarray]:
     source_image = image.copy()
-    images = [source_image]
+    images = []
     for detection in detections:
         images.append(draw_age_gender_recognition_one_frame(image.copy(), [detection]))
     images.append(draw_age_gender_recognition_one_frame(image.copy(), detections))
+    images.append(source_image)
     return images
 
 
@@ -605,10 +612,12 @@ def draw_emotion_recognition_one_frame(
 def draw_emotion_recognition(
     image: np.ndarray, detections: List[EmotionLabel],
 ) -> List[np.ndarray]:
-    images = [image.copy()]
+    images = []
+    source_image = image.copy()
     for detection in detections:
         images.append(draw_emotion_recognition_one_frame(image.copy(), [detection]))
     images.append(draw_emotion_recognition_one_frame(image, detections))
+    images.append(source_image)
     return images
 
 
