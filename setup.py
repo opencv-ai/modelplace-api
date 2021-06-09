@@ -23,7 +23,7 @@ packages = ["modelplace_api"]
 package_data = {"": ["*", "text_styles/*"]}
 install_requires = [
     "pydantic==1.5.1",
-    "loguru==0.5.1",
+    "loguru>=0.5.1",
     "numpy>=1.16.4",
 ]
 
