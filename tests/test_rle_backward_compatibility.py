@@ -1,8 +1,8 @@
-import json
 import os
 
 import cv2
 import numpy as np
+from pycocotools import mask
 
 from modelplace_api._rle_mask import decode_coco_rle, encode_binary_mask
 
@@ -12,16 +12,13 @@ binary_mask = np.asfortranarray(
 ).astype(np.uint8)
 
 
-with open('decoded_binary_mask.json', 'r') as f:
-    encoded_binary_mask =  json.load(f)
-encoded_binary_mask['counts'] = encoded_binary_mask['counts'].encode('utf-8')
-
-
 def test_encode():
+    pycocotools_encoded_mask = mask.encode(binary_mask)
     python_encoded_mask = encode_binary_mask(binary_mask)
-    assert python_encoded_mask == encoded_binary_mask
+    assert python_encoded_mask == pycocotools_encoded_mask
 
 
 def test_decode():
-    python_decoded_mask = decode_coco_rle(encoded_binary_mask)
+    pycocotools_encoded_mask = mask.encode(binary_mask)
+    python_decoded_mask = decode_coco_rle(pycocotools_encoded_mask)
     assert np.all(python_decoded_mask == binary_mask)

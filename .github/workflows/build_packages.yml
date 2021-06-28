@@ -1,0 +1,74 @@
+name: Build wheels for modelplace-api on Windows and Unix
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
+        platform: [x64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.platform }}
+
+      - name: Build the wheel on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          python --version
+          cd ${{ github.workspace }}
+          pip3 install wheel pytest && python setup.py bdist_wheel
+        shell: cmd
+
+      - name: Build the wheel on Unix
+        if: ${{ matrix.os != 'windows-latest' && matrix.python-version != '3.6' }}
+        run: |
+          python --version
+          cd ${{ github.workspace }}
+          pip3 install wheel pytest && python setup.py bdist_wheel
+
+      - name: Build the wheel on Unix using python3.6
+        if: ${{ matrix.os != 'windows-latest' && matrix.python-version == '3.6' }}
+        run: |
+          python --version
+          cd ${{ github.workspace }}
+          pip3 install wheel pytest numpy==1.19.3 && python setup.py bdist_wheel
+
+      - name: Install the package on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          cd ${{ github.workspace }}/dist
+          FOR %%i in (*.whl) DO python -m pip install %%i[vis-windows]
+        shell: cmd
+
+      - name: Install the package on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: for i in ${{ github.workspace }}/dist/*.whl; do python -m pip install ${i}[vis]; done
+
+      - name: Test the package on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: cd ${{ github.workspace }}/tests && python -m pytest test_rle.py -s
+        shell: cmd
+
+      - name: Test the package on Unix
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: cd ${{ github.workspace }}/tests && python -m pytest test_rle_backward_compatibility.py -s
