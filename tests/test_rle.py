@@ -13,15 +13,15 @@ binary_mask = np.asfortranarray(
 
 
 with open('decoded_binary_mask.json', 'r') as f:
-    decoded_binary_mask =  json.load(f)
-decoded_binary_mask['counts'] = decoded_binary_mask['counts'].encode('utf-8')
+    encoded_binary_mask =  json.load(f)
+encoded_binary_mask['counts'] = encoded_binary_mask['counts'].encode('utf-8')
 
 
 def test_encode():
     python_encoded_mask = encode_binary_mask(binary_mask)
-    assert python_encoded_mask == decoded_binary_mask
+    assert python_encoded_mask == encoded_binary_mask
 
 
 def test_decode():
-    python_decoded_mask = decode_coco_rle(decoded_binary_mask)
+    python_decoded_mask = decode_coco_rle(encoded_binary_mask)
     assert np.all(python_decoded_mask == binary_mask)
