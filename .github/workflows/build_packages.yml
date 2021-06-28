@@ -40,11 +40,18 @@ jobs:
         shell: cmd
 
       - name: Build the wheel on Unix
-        if: ${{ matrix.os != 'windows-latest' }}
+        if: ${{ matrix.os != 'windows-latest' && matrix.python-version != '3.6' }}
         run: |
           python --version
           cd ${{ github.workspace }}
           pip3 install wheel pytest && python setup.py bdist_wheel
+
+      - name: Build the wheel on Unix using python3.6
+        if: ${{ matrix.os != 'windows-latest' && matrix.python-version == '3.6' }}
+        run: |
+          python --version
+          cd ${{ github.workspace }}
+          pip3 install wheel pytest numpy==1.19.3 && python setup.py bdist_wheel
 
       - name: Install the package on Windows
         if: ${{ matrix.os == 'windows-latest' }}
@@ -55,9 +62,7 @@ jobs:
 
       - name: Install the package on Unix
         if: ${{ matrix.os != 'windows-latest' }}
-        run: |
-          for i in ${{ github.workspace }}/dist/*.whl; do python -m pip install ${i}; done
-          for i in ${{ github.workspace }}/dist/*.whl; do python -m pip install ${i}[vis]; done
+        run: for i in ${{ github.workspace }}/dist/*.whl; do python -m pip install ${i}[vis]; done
 
       - name: Test the package on Windows
         if: ${{ matrix.os == 'windows-latest' }}
