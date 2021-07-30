@@ -12,9 +12,9 @@ binary_mask = np.asfortranarray(
 ).astype(np.uint8)
 
 
-with open('decoded_binary_mask.json', 'r') as f:
-    encoded_binary_mask =  json.load(f)
-encoded_binary_mask['counts'] = encoded_binary_mask['counts'].encode('utf-8')
+with open("decoded_binary_mask.json", "r") as f:
+    encoded_binary_mask = json.load(f)
+encoded_binary_mask["counts"] = encoded_binary_mask["counts"].encode("utf-8")
 
 
 def test_encode():

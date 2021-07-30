@@ -125,3 +125,4 @@ class TaskType(enum.Enum):
     age_gender_recognition = enum.auto()
     emotion_recognition = enum.auto()
     mesh_detection = enum.auto()
+    background_removal = enum.auto()
