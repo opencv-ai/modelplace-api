@@ -721,9 +721,13 @@ def create_image(image: np.ndarray, save_path: str) -> None:
 
 def draw_background_removal(image: np.ndarray, detection: Mask) -> np.ndarray:
     foreground_mask_id = detection.classes.index("foreground")
-    decoded_mask = decode_coco_rle(detection.mask["binary"][foreground_mask_id])
-    idx = decoded_mask == 0
-    image[idx] = (255, 255, 255)
-    alfa_channel = decoded_mask.astype(image.dtype)[:, :, np.newaxis] * 255
+    if len(detection.mask["binary"]) > foreground_mask_id:
+        decoded_mask = decode_coco_rle(detection.mask["binary"][foreground_mask_id])
+        idx = decoded_mask == 0
+        image[idx] = (255, 255, 255)
+        alfa_channel = decoded_mask.astype(image.dtype)[:, :, np.newaxis] * 255
+    else:
+        alfa_channel = np.ones((image.shape[0], image.shape[1], 1), dtype=image.dtype)
+
     image = np.concatenate((image, alfa_channel), axis=2)
     return image
