@@ -469,13 +469,12 @@ def draw_instance_segmentation(image: np.ndarray, instance_mask: InstanceMask) -
         per_class_masks[class_id] = form_mask(image, idx, color, per_class_masks[class_id])
         per_class_color_boxes[class_id].append((box, color))
 
-    for class_mask, color_boxes in zip(per_class_masks.items(), per_class_color_boxes.values()):
-        class_id, mask = class_mask
-        if mask is None:
+    for idx, (class_mask, color_boxes) in enumerate(zip(per_class_masks.values(), per_class_color_boxes.values())):
+        if class_mask is None:
             continue
         one_class_image = source_image.copy()
-        one_class_image = add_instance_mask(one_class_image, mask)
-        one_class_image = add_legend(one_class_image, classes, DARK_PINK_COLOR, class_id)
+        one_class_image = add_instance_mask(one_class_image, class_mask)
+        one_class_image = add_legend(one_class_image, classes, DARK_PINK_COLOR, idx)
         for (box, color) in color_boxes:
             one_class_image = add_bbox(one_class_image, [box.x1, box.y1, box.x2, box.y2], color)
         images.append(one_class_image)
