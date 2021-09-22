@@ -331,7 +331,7 @@ def add_legend(
     return image
 
 
-def add_legend_all_classes(image: np.ndarray, classes: List, instance_segmentation: bool = False) -> np.ndarray:
+def add_legend_all_classes(image: np.ndarray, classes: List, colors: List) -> np.ndarray:
     img_h, img_w, _ = image.shape
     scale = min([img_w, img_h]) / NORM_HEIGHT
     text_size = int(scale * CLASS_TEXT_SIZE)
@@ -347,10 +347,9 @@ def add_legend_all_classes(image: np.ndarray, classes: List, instance_segmentati
         ],
     )
     for class_number, class_name in enumerate(classes):
-        color = RGBA_COLORS[class_number] if not instance_segmentation else BACKGROUND_COLOR
         image = add_class_box(
             image,
-            color,
+            colors[class_number],
             class_name.capitalize(),
             box_w,
             class_number,
@@ -368,7 +367,7 @@ def draw_detections_one_frame(image: np.ndarray, detections: List[BBox]) -> np.n
             image = add_bbox(
                 image, [detection.x1, detection.y1, detection.x2, detection.y2], color,
             )
-    image = add_legend_all_classes(image, classes)
+    image = add_legend_all_classes(image, classes, colors=RGBA_COLORS)
     return image
 
 
@@ -404,7 +403,7 @@ def draw_segmentation_one_frame(image: np.ndarray, detection: Mask) -> np.ndarra
         decoded_mask = decode_coco_rle(rle_mask)
         idx = decoded_mask == 1
         image = add_mask(image, idx, color)
-    image = add_legend_all_classes(image, classes)
+    image = add_legend_all_classes(image, classes, RGBA_COLORS)
     return image
 
 
@@ -430,8 +429,8 @@ def draw_instance_segmentation_one_frame(image: np.ndarray, instance_mask: Insta
         color_boxes.append((box, color))
     image = add_instance_mask(image, result_mask)
     for (box, color) in color_boxes:
-        image = add_bbox(image,[box.x1, box.y1, box.x2, box.y2], color)
-    image = add_legend_all_classes(image, classes, instance_segmentation=True)
+        image = add_bbox(image, [box.x1, box.y1, box.x2, box.y2], color)
+    image = add_legend_all_classes(image, classes, colors=[BACKGROUND_COLOR] * len(classes))
     return image
 
 
