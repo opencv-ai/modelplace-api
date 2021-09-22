@@ -455,7 +455,7 @@ def draw_instance_segmentation(image: np.ndarray, instance_mask: InstanceMask) -
     for instance_number, (mask, box) in enumerate(zip(instance_mask.masks, instance_mask.detections)):
         rle_mask = mask.mask["binary"][-1]
         class_id = class_name_to_idx_mapping[box.class_name]
-        # wwe loop RGBA colors if instance number grater than available colors
+        # we loop RGBA colors if instance number grater than available colors
         color = RGBA_COLORS[instance_number % len(RGBA_COLORS)]
         decoded_mask = decode_coco_rle(rle_mask)
         idx = decoded_mask == 1
@@ -463,8 +463,6 @@ def draw_instance_segmentation(image: np.ndarray, instance_mask: InstanceMask) -
         per_class_color_boxes[class_id].append((box, color))
 
     for idx, (class_mask, color_boxes) in enumerate(zip(per_class_masks.values(), per_class_color_boxes.values())):
-        if class_mask is None:
-            continue
         one_class_image = source_image.copy()
         one_class_image = add_instance_mask(one_class_image, class_mask)
         for (box, color) in color_boxes:
