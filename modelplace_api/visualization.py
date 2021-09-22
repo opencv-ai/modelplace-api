@@ -403,7 +403,7 @@ def draw_segmentation_one_frame(image: np.ndarray, detection: Mask) -> np.ndarra
         decoded_mask = decode_coco_rle(rle_mask)
         idx = decoded_mask == 1
         image = add_mask(image, idx, color)
-    image = add_legend_all_classes(image, classes, RGBA_COLORS)
+    image = add_legend_all_classes(image, classes, colors=RGBA_COLORS)
     return image
 
 
