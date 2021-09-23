@@ -18,6 +18,7 @@ from .objects import (
     Pose,
     TextPolygon,
     VideoFrame,
+    InstanceMask
 )
 from .utils import decode_coco_rle
 
@@ -295,6 +296,13 @@ def add_mask(image: np.ndarray, idx: np.ndarray, color: tuple) -> np.ndarray:
     return image.astype(np.uint8)
 
 
+def add_instance_mask(image: np.ndarray, mask: np.ndarray):
+    alpha = 0.5
+    beta = 0.5
+    image = alpha * image + beta * mask
+    return image.astype(np.uint8)
+
+
 def add_legend(
     image: np.ndarray, classes: List, picked_color: tuple, picked_class_number: int,
 ) -> np.ndarray:
@@ -323,7 +331,7 @@ def add_legend(
     return image
 
 
-def add_legend_all_classes(image: np.ndarray, classes: List) -> np.ndarray:
+def add_legend_all_classes(image: np.ndarray, classes: List, colors: List) -> np.ndarray:
     img_h, img_w, _ = image.shape
     scale = min([img_w, img_h]) / NORM_HEIGHT
     text_size = int(scale * CLASS_TEXT_SIZE)
@@ -341,7 +349,7 @@ def add_legend_all_classes(image: np.ndarray, classes: List) -> np.ndarray:
     for class_number, class_name in enumerate(classes):
         image = add_class_box(
             image,
-            RGBA_COLORS[class_number],
+            colors[class_number],
             class_name.capitalize(),
             box_w,
             class_number,
@@ -359,7 +367,7 @@ def draw_detections_one_frame(image: np.ndarray, detections: List[BBox]) -> np.n
             image = add_bbox(
                 image, [detection.x1, detection.y1, detection.x2, detection.y2], color,
             )
-    image = add_legend_all_classes(image, classes)
+    image = add_legend_all_classes(image, classes, colors=RGBA_COLORS)
     return image
 
 
@@ -395,8 +403,74 @@ def draw_segmentation_one_frame(image: np.ndarray, detection: Mask) -> np.ndarra
         decoded_mask = decode_coco_rle(rle_mask)
         idx = decoded_mask == 1
         image = add_mask(image, idx, color)
-    image = add_legend_all_classes(image, classes)
+    image = add_legend_all_classes(image, classes, colors=RGBA_COLORS)
     return image
+
+
+def draw_instance_segmentation_one_frame(image: np.ndarray, instance_mask: InstanceMask) -> np.ndarray:
+    predicted_classes = [
+        mask.mask["classes"] for mask in instance_mask.masks
+    ]
+    unique_predicted_classes = list(set(elem for sublist in predicted_classes for elem in sublist))
+    classes = [
+        class_name
+        for class_number, class_name in enumerate(instance_mask.classes)
+        if class_number in unique_predicted_classes
+    ]
+    color_boxes = []
+    result_mask = np.zeros_like(image).astype(np.uint8)
+    for instance_number, (mask, box) in enumerate(zip(instance_mask.masks, instance_mask.detections)):
+        # skip background here
+        rle_mask = mask.mask["binary"][-1]
+        color = RGBA_COLORS[instance_number]
+        decoded_mask = decode_coco_rle(rle_mask)
+        idx = decoded_mask == 1
+        result_mask[idx] = color[: result_mask.shape[2]]
+        color_boxes.append((box, color))
+    image = add_instance_mask(image, result_mask)
+    for (box, color) in color_boxes:
+        image = add_bbox(image, [box.x1, box.y1, box.x2, box.y2], color)
+    image = add_legend_all_classes(image, classes, colors=[BACKGROUND_COLOR] * len(classes))
+    return image
+
+
+def draw_instance_segmentation(image: np.ndarray, instance_mask: InstanceMask) -> np.ndarray:
+    source_image = image.copy()
+    images = []
+    predicted_classes = [
+        mask.mask["classes"] for mask in instance_mask.masks
+    ]
+    unique_predicted_classes = list(set(elem for sublist in predicted_classes for elem in sublist))
+    classes = [
+        class_name
+        for class_number, class_name in enumerate(instance_mask.classes)
+        if class_number in unique_predicted_classes
+    ]
+
+    class_name_to_idx_mapping = dict(zip(classes, unique_predicted_classes))
+
+    per_class_masks = {class_id: np.zeros_like(image).astype(np.uint8) for class_id in unique_predicted_classes}
+    per_class_color_boxes = {class_id: [] for class_id in unique_predicted_classes}
+    # we should group instances by class here
+    for instance_number, (mask, box) in enumerate(zip(instance_mask.masks, instance_mask.detections)):
+        rle_mask = mask.mask["binary"][-1]
+        class_id = class_name_to_idx_mapping[box.class_name]
+        # we loop RGBA colors if instance number grater than available colors
+        color = RGBA_COLORS[instance_number % len(RGBA_COLORS)]
+        decoded_mask = decode_coco_rle(rle_mask)
+        idx = decoded_mask == 1
+        per_class_masks[class_id][idx] = color[: per_class_masks[class_id].shape[2]]
+        per_class_color_boxes[class_id].append((box, color))
+
+    for idx, (class_mask, color_boxes) in enumerate(zip(per_class_masks.values(), per_class_color_boxes.values())):
+        one_class_image = source_image.copy()
+        one_class_image = add_instance_mask(one_class_image, class_mask)
+        for (box, color) in color_boxes:
+            one_class_image = add_bbox(one_class_image, [box.x1, box.y1, box.x2, box.y2], color)
+        one_class_image = add_legend(one_class_image, classes, DARK_PINK_COLOR, idx)
+        images.append(one_class_image)
+    images.append(add_legend(source_image, classes, BACKGROUND_COLOR, -1))
+    return images
 
 
 def draw_segmentation(image: np.ndarray, detection: Mask) -> List[np.ndarray]:

@@ -49,6 +49,12 @@ class Mask(pydantic.BaseModel):
     classes: list
 
 
+class InstanceMask(pydantic.BaseModel):
+    detections: List[BBox]
+    masks: List[Mask]
+    classes: list
+
+
 class Joint(pydantic.BaseModel):
     x: int
     y: int
@@ -126,3 +132,4 @@ class TaskType(enum.Enum):
     emotion_recognition = enum.auto()
     mesh_detection = enum.auto()
     background_removal = enum.auto()
+    instance_segmentation = enum.auto()
