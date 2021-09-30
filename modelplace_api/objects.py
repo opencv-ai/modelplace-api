@@ -52,7 +52,6 @@ class Mask(pydantic.BaseModel):
 class InstanceMask(pydantic.BaseModel):
     detections: List[BBox]
     masks: List[Mask]
-    classes: list
 
 
 class Joint(pydantic.BaseModel):
