@@ -443,7 +443,7 @@ def draw_instance_segmentation(image: np.ndarray, instance_mask: InstanceMask) -
     unique_predicted_classes = list(set(elem for sublist in predicted_classes for elem in sublist))
     classes = [
         class_name
-        for class_number, class_name in enumerate(instance_mask.classes)
+        for class_number, class_name in enumerate(instance_mask.masks[0].classes)
         if class_number in unique_predicted_classes
     ]
 
