@@ -80,6 +80,11 @@ class COCOPose(pydantic.BaseModel):
     bbox: COCOBBox
 
 
+class COCOInstanceMask(pydantic.BaseModel):
+    detections: List[COCOBBox]
+    masks: List[Mask]
+
+
 class Label(pydantic.BaseModel):
     score: float
     class_name: str
