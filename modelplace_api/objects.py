@@ -15,29 +15,29 @@ class TextPolygon(pydantic.BaseModel):
 
 
 class BBox(pydantic.BaseModel):
-    x1: int
-    y1: int
-    x2: int
-    y2: int
+    x1: float
+    y1: float
+    x2: float
+    y2: float
     score: float
     class_name: str
 
 
 class TrackBBox(pydantic.BaseModel):
-    x1: int
-    y1: int
-    x2: int
-    y2: int
+    x1: float
+    y1: float
+    x2: float
+    y2: float
     score: float
     class_name: str
     track_number: int
 
 
 class COCOBBox(pydantic.BaseModel):
-    x1: int
-    y1: int
-    x2: int
-    y2: int
+    x1: float
+    y1: float
+    x2: float
+    y2: float
     score: float
     class_name: str
     area: float
