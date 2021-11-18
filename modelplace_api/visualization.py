@@ -421,6 +421,8 @@ def draw_segmentation_one_frame(image: np.ndarray, detection: Mask) -> np.ndarra
 def draw_instance_segmentation_one_frame(
     image: np.ndarray, instance_mask: InstanceMask,
 ) -> np.ndarray:
+    if not len(instance_mask.masks):
+        return image
     predicted_classes = [mask.mask["classes"] for mask in instance_mask.masks]
     unique_predicted_classes = list(
         set(elem for sublist in predicted_classes for elem in sublist),
@@ -454,6 +456,8 @@ def draw_instance_segmentation_one_frame(
 def draw_instance_segmentation(
     image: np.ndarray, instance_mask: InstanceMask,
 ) -> np.ndarray:
+    if not len(instance_mask.masks):
+        return image
     source_image = image.copy()
     images = []
     predicted_classes = [mask.mask["classes"] for mask in instance_mask.masks]
