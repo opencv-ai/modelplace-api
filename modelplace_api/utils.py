@@ -25,7 +25,12 @@ def is_numpy_array_equal(result: np.ndarray, gt: np.ndarray, error: float) -> bo
     if result.size != gt.size:
         raise RuntimeError('"result" and "gt" arrays must have equal size')
     elements_num = result.size
-    equal_elements_num = np.equal(result, gt).sum()
+
+    if result.dtype == np.uint8:
+        equal_elements_num = np.equal(result, gt).sum()
+    else:
+        equal_elements_num = np.isclose(result, gt, rtol=error).sum()
+
     matching_ratio = equal_elements_num / elements_num
     return matching_ratio >= 1 - error
 
