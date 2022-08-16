@@ -18,14 +18,14 @@ except ImportError:
 
 
 def is_numpy_array_equal(result: np.ndarray, gt: np.ndarray, error: float) -> bool:
-    '''
+    """
     Applies element-wise comparison of two ndarrays and defines
     whether the ratio of matched elements is eligible
-    '''
-    if result.size != gt.size:
-        raise RuntimeError('"result" and "gt" arrays must have equal size')
-    if result.dtype != gt.dtype:
-        raise RuntimeError('"result" and "gt" arrays must have equal dtype')
+    """
+    if result.shape != gt.shape:
+        raise RuntimeError(
+            f'"result" and "gt" shapes are different ({result.shape} vs {gt.shape}) - must be the same'
+        )
 
     if np.issubdtype(result.dtype, np.integer):
         matched = np.equal(result, gt).sum()
