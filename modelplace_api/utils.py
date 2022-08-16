@@ -17,6 +17,23 @@ except ImportError:
     from ._rle_mask import encode_binary_mask, decode_coco_rle
 
 
+def is_numpy_array_equal(result: np.ndarray, gt: np.ndarray, error: float) -> bool:
+    """
+    Applies element-wise comparison of two ndarrays and defines
+    whether the ratio of matched elements is eligible
+    """
+    if result.shape != gt.shape:
+        raise RuntimeError(
+            f'"result" and "gt" shapes are different ({result.shape} vs {gt.shape}) - must be the same'
+        )
+
+    if np.issubdtype(result.dtype, np.integer):
+        matched = np.equal(result, gt).sum()
+    else:
+        matched = np.isclose(result, gt, rtol=error).sum()
+    return matched / result.size >= 1 - error
+
+
 def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
     if type(result) != type(gt):
         raise TypeError
@@ -37,6 +54,8 @@ def is_equal(result: Any, gt: Any, error: float = 0.001) -> bool:
         result = result.decode("utf-8")
         gt = gt.decode("utf-8")
         ret = ret and result == gt
+    elif isinstance(result, np.ndarray):
+        ret = ret and is_numpy_array_equal(result, gt, error)
     else:
         ret = ret and np.isclose(result, gt, rtol=error)
     return ret

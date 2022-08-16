@@ -1,6 +1,7 @@
 import enum
 from typing import List
 
+import numpy as np
 import pydantic
 
 
@@ -116,6 +117,13 @@ class CountableVideoFrame(VideoFrame):
     people_out: int
 
 
+class OutImage(pydantic.BaseModel):
+    image: np.ndarray
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class Device(enum.Enum):
     gpu = enum.auto()
     cpu = enum.auto()
@@ -137,3 +145,4 @@ class TaskType(enum.Enum):
     mesh_detection = enum.auto()
     background_removal = enum.auto()
     instance_segmentation = enum.auto()
+    image_processing = enum.auto()
