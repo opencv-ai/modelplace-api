@@ -1,4 +1,3 @@
-import os
 from typing import Any
 
 import numpy as np
@@ -24,7 +23,7 @@ def is_numpy_array_equal(result: np.ndarray, gt: np.ndarray, error: float) -> bo
     """
     if result.shape != gt.shape:
         raise RuntimeError(
-            f'"result" and "gt" shapes are different ({result.shape} vs {gt.shape}) - must be the same'
+            f'"result" and "gt" shapes are different ({result.shape} vs {gt.shape}) - must be the same',
         )
 
     if np.issubdtype(result.dtype, np.integer):
